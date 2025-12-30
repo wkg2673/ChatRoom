@@ -20,7 +20,7 @@ Client:
 ## Running the application locally
 
 ```
-git clone https://github.com/OneSlashNinja/ChatRoom.git
+git clone https://github.com/wkg2673/ChatRoom.git
 cd ChatRoom
 npm install
 cd Server
