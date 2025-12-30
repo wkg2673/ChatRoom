@@ -1,58 +1,50 @@
-"use strict"
+"use strict";
 
-var express = require('express');
-
+var express = require("express");
 var app = express();
 
-var http = require('http').Server(app);
-var socketio = require('socket.io')(http);
+var http = require("http").Server(app);
+var socketio = require("socket.io")(http);
 
-var port = process.env.port || 3000;
-
-app.use(express.static(__dirname + "/../Client"));
-app.use(express.static(__dirname + "/../node_modules"));
+var port = process.env.PORT || 3000; // ✅ Corrected
 
 var users = [];
 
-socketio.on('connection', function(socket){
+socketio.on("connection", function(socket) {
     console.log("A user connected.");
 
-    socket.on('join', function(userName){
-        console.log('user change name to : ' + userName);
+    socket.on("join", function(userName) {
+        console.log("User changed name to: " + userName);
 
         socket.userName = userName;
         users.push(userName);
 
-        //notice it is not socket.emit('refreshUserList', users)
-        socketio.sockets.emit('refreshUserList', users);
+        socketio.sockets.emit("refreshUserList", users);
     });
 
-    socket.on('message', function(message){
-        console.log(socket.userName + ' says: ' + message);
+    socket.on("message", function(message) {
+        console.log(socket.userName + " says: " + message);
 
         var data = {
             userName: socket.userName,
             message: message
         };
 
-        socketio.emit('message', data);
+        socketio.emit("message", data);
     });
 
-    socket.on('disconnect', function(){
-
-        //when user log off, the name should be removed from the user list
+    socket.on("disconnect", function() {
         var removedUserIndex = users.indexOf(socket.userName);
-        if(removedUserIndex >= 0){
+        if (removedUserIndex >= 0) {
             users.splice(removedUserIndex, 1);
         }
 
-        //notice it is not socket.emit('refreshUserList', users)
-        socketio.sockets.emit('refreshUserList', users);
+        socketio.sockets.emit("refreshUserList", users);
 
-        console.log('user ' + socket.userName + ' disconnected');
+        console.log("User " + socket.userName + " disconnected");
     });
 });
 
-http.listen(port, function(){
-    console.log("Running on PORT: " + port);
+http.listen(port, function() {
+    console.log("Server running on PORT: " + port);
 });
